@@ -42,6 +42,7 @@ function App() {
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
               {contactConfig.businessName}
+            </motion.div>
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
@@ -155,8 +156,7 @@ function App() {
             </div>
           </motion.div>
         )}
-      </AnimatePresence
-      </motion.nav>
+      </AnimatePresence>
 
       {/* Contact Modal */}
       <ContactModal 
