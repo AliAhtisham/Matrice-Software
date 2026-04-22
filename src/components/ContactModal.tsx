@@ -14,9 +14,27 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [contactError, setContactError] = useState('');
+
+  const validateContact = (value: string): boolean => {
+    // Check if it's a valid email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Check if it's a valid phone number (10 digits, with optional country code and separators)
+    const phoneRegex = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/;
+    
+    return emailRegex.test(value) || phoneRegex.test(value);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate contact field
+    if (!validateContact(formData.email)) {
+      setContactError('Please enter a valid email or phone number');
+      return;
+    }
+    
+    setContactError('');
     setIsSubmitting(true);
 
     try {
@@ -60,6 +78,10 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
       ...prev,
       [e.target.name]: e.target.value,
     }));
+    // Clear contact error when user types
+    if (e.target.name === 'email') {
+      setContactError('');
+    }
   };
 
   return (
@@ -162,7 +184,7 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
                       />
                     </motion.div>
 
-                    {/* Email Field */}
+                    {/* Email/Phone Field */}
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -172,15 +194,26 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
                         Phone or Email *
                       </label>
                       <input
-                        type="email"
+                        type="text"
                         id="email"
                         name="email"
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-white placeholder-gray-500"
+                        className={`w-full px-4 py-3 bg-white/5 border rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-white placeholder-gray-500 ${
+                          contactError ? 'border-red-500' : 'border-white/10'
+                        }`}
                         placeholder="your@email.com or 9876543210"
                       />
+                      {contactError && (
+                        <motion.p
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="text-red-400 text-sm mt-1"
+                        >
+                          {contactError}
+                        </motion.p>
+                      )}
                     </motion.div>
 
                     {/* Project Brief Field */}
